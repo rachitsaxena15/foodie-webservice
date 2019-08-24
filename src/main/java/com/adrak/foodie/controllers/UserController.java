@@ -30,34 +30,44 @@ public class UserController {
 		return service.getAllUsers();
 	}
 	
-	@RequestMapping(method = RequestMethod.GET, value = "/users/list/{name}")
-	public @ResponseBody User getUser(@PathVariable String name) {
-		try {
-			long id = Long.parseLong(name);
+	@RequestMapping(method = RequestMethod.GET, value = "/users/list/{userId}")
+	public @ResponseBody User getUser(@PathVariable String userId) {
+			long id = Long.parseLong(userId);
 			return service.getUser(id);
-		}
-		catch(Exception e) {
-			return service.getUser(name);
-		}
 	}
 	
 	@RequestMapping(method = RequestMethod.POST, value = "/users/register")
 	public ResponseEntity<User> addUser(@RequestBody User user) {
 		if(service.isUserExist(user))
 			return new ResponseEntity<User>(HttpStatus.CONFLICT);
-		if(validator.validateNewUser(service, user)) {
+		if(validator.validateNewUser(user)) {
 			User us = service.addUser(user);
 			return new ResponseEntity<>(us, HttpStatus.CREATED);
 		}
 		return new ResponseEntity<User>(HttpStatus.BAD_REQUEST);
 	}
 	
-	@RequestMapping(method = RequestMethod.DELETE, value = "/users/delete/{name}")
-	public void delete(@PathVariable String name){
-		User user = service.getAllUsers().stream().filter(us -> us.getName().equals(name)).findFirst().get();
-		System.out.println(user.getName());
-		service.deleteUser(user);
+	@RequestMapping(method = RequestMethod.PUT, value = "/users/update")
+	public ResponseEntity<User> updateUser(@RequestBody User user) {
+		if(!service.isUserExist(user))
+			return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
+		if(validator.validateNewUser(user)) {
+			User us = service.addUser(user);
+			return new ResponseEntity<>(us, HttpStatus.OK);
+		}
+		return new ResponseEntity<User>(HttpStatus.BAD_REQUEST);
 	}
 	
+	// Do we need this?
+	@RequestMapping(method = RequestMethod.DELETE, value = "/users/delete/{userId}")
+	public ResponseEntity<Void> delete(@PathVariable String userId){
+		long id = Long.parseLong(userId); 
+		User user = service.getUser(id);
+		if(service.isUserExist(user)) {
+			service.deleteUser(user);
+			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+		}
+		return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+	}
 	
 }

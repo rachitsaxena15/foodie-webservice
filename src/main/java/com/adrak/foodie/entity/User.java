@@ -14,19 +14,19 @@ public class User {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)	
 	@Column(name="id")
-	long id;
+	private long id;
 	
 	@Column(name="name")
-	String name;
+	private String name;
 	
 	@Column(name="email")
-	String email;
+	private String email;
 	
 	@Column(name="mphone")
-	String phone;
+	private String phone;
 	
 	@Column(name="meta")
-	String metadata;
+	private String metadata;
 	
 	public long getId() {
 		return id;
